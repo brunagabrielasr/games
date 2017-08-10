@@ -5,7 +5,7 @@ var game= new Phaser.Game(
 	'100%', //tamanho da tela em x
 	'100%', //tamanho da tela em y
 	Phaser.CANVAS, //atribiu o canvas dentro do body-html
-	'Game Demo', //nome do jogo????
+	'Game Demo', //nome do jogo
 	{	preload: preload, 
 		create: create, 
 		update:update
@@ -30,7 +30,7 @@ function create(){
 
 	game.add.sprite(0,0,'background');//preenche o background na posição x e y 0.
 
-	player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');//sprite pra desenhar na tela //load carrega a imagem na tela
+	player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');//para o player aparecer sempre no centro do mapa.
 	game.camera.follow(player);
 	game.physics.enable(player, Phaser.Physics.ARCADE);//tipo da física utilizada
 
@@ -43,7 +43,12 @@ function create(){
 	
 	monster = game.add.group();// se não adicionar o group não da para fazer o for???
 	for (var i = 0; i<10; i++) {
-		monster.create(game.world.randomX, game.world.randomY, 'monster');// apresenta o monster em qualquer lugar dentro do mundo
+		var randomX = game.world.randomX;
+		var randomY = game.world.randomY;
+		theMonster = monster.create( randomX, randomY, 'monster');// apresenta o monster em qualquer lugar dentro do mundo
+		var styleName = {font: '25px Arial', fill:'#fff'};
+		var text = game.add.text(randomX, randomY, (i+1).toString(), styleName);
+		theMonster.theName = text;
 	};
 	game.physics.enable(monster, Phaser.Physics.ARCADE);
 
@@ -75,9 +80,9 @@ function update(){
 	}
 
 	game.physics.arcade.overlap(player, monster, monsterHitHandler);
-	// if(!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown){
-	// 	player.animations.stop();
-	// }
+	if(!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown){
+		player.animations.stop();
+	}
 }
 
 function monsterHitHandler(playerObject, monsterObject){
@@ -87,7 +92,32 @@ function monsterHitHandler(playerObject, monsterObject){
 	score++;
 	txtScore.setText(score.toString());
 
-	monster.remove(monsterObject);
-	console.log(monsterObject);
+	if(monsterObject[0] == 1){
+		monster.remove(monsterObject);
+		monsterObject.theName.destroy();
+		console.log(monsterObject);
+	}
+
+	// count = 1;
+	// while(count < 11){
+	// 	if(count == parseInt(monsterObject.theName.text)){
+	// 		monster.remove(monsterObject);
+	// 		monsterObject.theName.destroy();
+	// 		console.log(monsterObject);
+	// 		count++;
+	// 	}
+	// }
+	// for (var i = 1; i<11; i++) {
+	// 	if(i == monsterObject.theName.text){
+	// 		monster.remove(monsterObject);
+	// 		monsterObject.theName.destroy();
+	// 		console.log(monsterObject);
+	// 	}
+	// }
+		
+
+	// monster.remove(monsterObject);
+	// monsterObject.theName.destroy();
+	// console.log(monsterObject.theName);
 
 }
