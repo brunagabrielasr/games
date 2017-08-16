@@ -26,6 +26,11 @@ function create(){
 	music.volume = 0.5;
 	music.loopFull;
 
+	//Variáveis
+	score = 0;
+	second = 0;
+	countMonster = 0;
+
 	game.world.resize(2000, 2000);//define o tamanho do mundo de acordo com o tamanho da imagem
 
 	game.add.sprite(0,0,'background');//preenche o background na posição x e y 0.
@@ -52,12 +57,15 @@ function create(){
 	};
 	game.physics.enable(monster, Phaser.Physics.ARCADE);
 
-	score = 0;
 	var style = {font: '25px Arial', fill: '#bddb28'};
 	txtScore = game.add.text(10,10, score.toString(), style);
 	txtScore.fixedToCamera = true;//o score fica fixo na camera
 
+	txtTemp = game.add.text(10,600, second.toString(), style);
+	txtTemp.fixedToCamera = true;//o tempo fica fixo na camera
+
 	cursors = game.input.keyboard.createCursorKeys();//pega os botões pressionados
+	timeStart = new Date().getTime();
 }
 
 function update(){
@@ -83,41 +91,32 @@ function update(){
 	if(!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown){
 		player.animations.stop();
 	}
+
+	timeCurrent = new Date().getTime();
+	if(countMonster < 10){
+		second = parseInt((timeCurrent - timeStart) / 1000);
+		txtTemp.setText(second.toString());
+	}
 }
 
 function monsterHitHandler(playerObject, monsterObject){
-	monsterObject.x = game.world.randomX;
-	monsterObject.y = game.world.randomY;
-	game.sound.play('ping');
-	score++;
-	txtScore.setText(score.toString());
-
-	if(monsterObject[0] == 1){
-		monster.remove(monsterObject);
-		monsterObject.theName.destroy();
-		console.log(monsterObject);
-	}
-
-	// count = 1;
-	// while(count < 11){
-	// 	if(count == parseInt(monsterObject.theName.text)){
-	// 		monster.remove(monsterObject);
-	// 		monsterObject.theName.destroy();
-	// 		console.log(monsterObject);
-	// 		count++;
-	// 	}
-	// }
-	// for (var i = 1; i<11; i++) {
-	// 	if(i == monsterObject.theName.text){
-	// 		monster.remove(monsterObject);
-	// 		monsterObject.theName.destroy();
-	// 		console.log(monsterObject);
-	// 	}
-	// }
-		
-
-	// monster.remove(monsterObject);
-	// monsterObject.theName.destroy();
-	// console.log(monsterObject.theName);
-
+    var monsterOrder = monsterObject.z; 
+    if(monsterOrder == 0){
+		score++;
+		countMonster++;
+    	monster.remove(monsterObject);
+    	monsterObject.theName.destroy();
+    	ping = game.sound.play('ping');
+    	txtScore.setText(score.toString());
+    }
 }
+
+/*
+obter posição do click.
+create:
+game.input.onDown.add(clicou, this);
+
+function clicou(m){
+	console.log(m.position.x)
+	console.log(m.position.y)
+}*/
